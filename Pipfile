@@ -1,0 +1,17 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+ipython = "*"
+ipdb = "*"
+pytest = "*"
+
+[packages]
+scrapy = "*"
+python-decouple = "*"
+spidermon = {git = "ssh://git@github.com/scrapinghub/spidermon.git",extras = ["monitoring", "validation"]}
+
+[requires]
+python_version = "3.7"
