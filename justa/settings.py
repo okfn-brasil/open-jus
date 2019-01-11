@@ -1,3 +1,6 @@
+from decouple import config
+
+
 # Scrapy settings for justa project
 #
 # For simplicity, this file contains only settings considered important or
@@ -51,7 +54,7 @@ ROBOTSTXT_OBEY = True
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    'justa.middlewares.JustaDownloaderMiddleware': 543,
+#    'raspadorlegislativo.middlewares.JustaDownloaderMiddleware': 543,
 #}
 
 # Enable or disable extensions
@@ -62,9 +65,9 @@ EXTENSIONS = {
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'justa.pipelines.JustaPipeline': 300,
-#}
+ITEM_PIPELINES = {
+    'spidermon.contrib.scrapy.pipelines.ItemValidationPipeline': 800,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -90,4 +93,17 @@ EXTENSIONS = {
 
 # Spidermon
 # https://spidermon.readthedocs.io/
+
 SPIDERMON_ENABLED = True
+SPIDERMON_VALIDATION_MODELS = (
+     'justa.validators.JustaItemModel',
+)
+SPIDERMON_SPIDER_CLOSE_MONITORS = (
+    'justa.monitors.distrito_federal.DistritoFederalMonitorSuite',
+)
+
+
+# Selenium
+# https://selenium-python.readthedocs.io/
+
+SELENIUM_DRIVE_URL=config('SELENIUM_DRIVE_URL')
