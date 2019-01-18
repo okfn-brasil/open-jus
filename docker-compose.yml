@@ -3,13 +3,13 @@ services:
 
   scrapy:
     build:
-      context: .
+      context: justa/crawler
     links:
       - chrome
     env_file:
       - .env
     volumes:
-      - ./:/justa
+      - ./justa/crawler:/justa
     depends_on:
       - chrome
     command: ["scrapy", "crawl", "distrito_federal"]
