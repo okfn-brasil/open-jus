@@ -8,6 +8,7 @@ django-extensions = "*"
 ipdb = "*"
 pytest = "*"
 pytest-django = "*"
+django-test-without-migrations = "*"
 
 [packages]
 django = "*"
