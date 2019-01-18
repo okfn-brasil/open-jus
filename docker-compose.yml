@@ -10,6 +10,7 @@ services:
       - .env
     volumes:
       - ./justa/crawler:/justa
+      - ./data:/mnt/data
     depends_on:
       - chrome
     command: ["scrapy", "crawl", "distrito_federal"]
