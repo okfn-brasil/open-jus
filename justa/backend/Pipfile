@@ -9,11 +9,13 @@ ipdb = "*"
 pytest = "*"
 pytest-django = "*"
 django-test-without-migrations = "*"
+mixer = "*"
 
 [packages]
 django = "*"
 python-decouple = "*"
 dj-database-url = "*"
+restless = "*"
 
 [requires]
 python_version = "3.7"

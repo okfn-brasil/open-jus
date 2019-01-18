@@ -21,6 +21,14 @@ $ docker-compose run --rm scrapy scrapy crawl distrito_federal --loglevel=DEBUG
 $ docker-compose up django
 ```
 
+#### API endpoints
+
+* List all court orders:<br>`GET /api/court-orders/`
+* Details of a court order:<br>`GET /api/court-orders/<id>`
+* Create a court order:<br>`POST /api/court-orders/`
+
+The `token` value, needed for `POST` requests, should be the hexdigest of the `SECRET_KET`.
+
 ## Testing
 
 ```console

@@ -10,6 +10,7 @@ class CourtOrder(models.Model):
     text = models.CharField(max_length=255)
 
     class Meta:
+        ordering = ('-date', 'name')
         unique_together = (("source", "number"),)
         indexes = [
             models.Index(fields=['date']),

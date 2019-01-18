@@ -2,7 +2,7 @@ from functools import lru_cache
 from hashlib import md5
 
 from django.conf import settings
-from django.forms import CharField, ModelForm, ValidationError
+from django.forms import CharField, Form, ModelForm, ValidationError
 
 from justa.core.models import CourtOrder
 
@@ -19,9 +19,11 @@ class TokenField(CharField):
             raise ValidationError("Token inválido")
 
 
-class CourtOrderForm(ModelForm):
+class AuthenticationForm(Form):
     token = TokenField()
 
+
+class CourtOrderForm(ModelForm):
     class Meta:
         model = CourtOrder
-        fields = ('source', 'number', 'name', 'date', 'body', 'text')
+        fields = tuple(field.name for field in CourtOrder._meta.fields)
