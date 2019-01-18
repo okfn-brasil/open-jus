@@ -1,21 +1,17 @@
-FROM python:3.7.2-alpine
+FROM python:3.7.2-slim
 
 WORKDIR /justa
 
-ADD justa/crawler/requirements.txt requirements.txt
-ADD justa/crawler/requirements-dev.txt requirements-dev.txt
+ADD requirements.txt requirements.txt
+ADD requirements-dev.txt requirements-dev.txt
 
-RUN apk update && \
-    apk add --virtual .build-dependencies \
-        build-base \
-        git \
-        libffi-dev \
-        openssh \
-        python3-dev && \
-    apk add libxslt-dev openssl-dev && \
+RUN apt-get update -y && \
+    apt-get install -y build-essential git libffi-dev openssh-client python3-dev && \
+    apt-get install -y libxslt-dev libssl-dev && \
     pip install -U pip && \
     pip install -r requirements-dev.txt && \
-    apk del .build-dependencies
+    apt-get purge -y git build-essential libffi-dev openssh-client python3-dev
 
-ADD justa/crawler/scrapy.cfg scrapy.cfg
-ADD justa/crawler/justa /justa/justa
+
+ADD scrapy.cfg scrapy.cfg
+ADD justa /justa/justa
