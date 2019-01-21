@@ -1,0 +1,20 @@
+version: "3"
+services:
+
+  scrapy:
+    build:
+      context: .
+    links:
+      - chrome
+    env_file:
+      - .env
+    volumes:
+      - ./:/justa
+    depends_on:
+      - chrome
+    command: ["scrapy", "crawl", "distrito_federal"]
+
+  chrome:
+    image: selenium/standalone-chrome
+    ports:
+      - 4444:4444

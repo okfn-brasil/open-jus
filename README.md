@@ -1,18 +1,19 @@
 # Justa
 
-## Requirements
+## Requirements & dependencies
 
-* Python 3.7
-* Pipenv
+* Docker and Docker Compose
 
-## Install
+## Running
+
+Having `distrito_federal` as a spider and `INFO` as the desired log level:
 
 ```console
-$ pipenv install
+$ docker-compose run --rm scrapy scrapy crawl distrito_federal --loglevel=DEBUG
 ```
 
-## Tests
+## Testing
 
 ```console
-$ pipenv shell py.test
+$ docker-compose run --rm scrapy py.test
 ```
