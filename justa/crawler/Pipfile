@@ -8,10 +8,12 @@ ipdb = "*"
 pytest = "*"
 
 [packages]
+jsonschema = "*"
 python-decouple = "*"
 schematics = "*"
 scrapy = "*"
 selenium = "*"
+spidermon = {extras = ["monitoring", "validation"],version = "*"}
 
 [requires]
 python_version = "3.7"
