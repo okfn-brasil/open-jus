@@ -3,7 +3,7 @@ from datetime import datetime
 from urllib.parse import urlencode
 
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import StaleElementReferenceException
 
 from justa.items import JustaItem
 from justa.settings import SELENIUM_DRIVE_URL
@@ -50,9 +50,23 @@ class DistritoFederalSpider(SeleniumSpider):
         for page in range(1, self.total_pages + 1):
             yield from self.parse_page(page)
 
-    def start_page(self):
+    def start_page(self, page=1):
         self.browser.get(self.url)
-        self.browser.wait_for('#botao_pesquisar').click()  # (re)post form
+        button = self.browser.wait_for(
+            '#botao_pesquisar',
+            reload_method=self.start_page,
+            reload_args=(page,),
+            logger=self.logger,
+            error_message='Could not load the initial form'
+        )
+        button.click()  # (re)post form
+
+        if page > 1:
+            paginator = self.browser.wait_for('#numeroDaPaginaAtual')
+            paginator.send_keys(Keys.CONTROL + "a");
+            paginator.send_keys(Keys.DELETE);
+            paginator.send_keys(page)
+            paginator.send_keys(Keys.ENTER)
 
     @property
     def total_pages(self):
@@ -60,29 +74,28 @@ class DistritoFederalSpider(SeleniumSpider):
             return self._total_pages
 
         pattern = r'Total de páginas: (?P<total>\d+)\.'
-        contents = self.browser.wait_for('#div_conteudoGeral')
+        contents = self.browser.wait_for(
+            '#div_conteudoGeral',
+            reload_method=self.start_page,
+            logger=self.logger,
+            error_message='Could not load the total amount of pages'
+        )
         match = re.search(pattern, contents.text)
 
         self._total_pages = int(match.group('total'))
+        self.logger.debug(f'Total pages to crawl: {self._total_pages}')
         return self.total_pages
 
-    def parse_page(self, page, retries=10):
-        paginator = self.browser.wait_for('#numeroDaPaginaAtual')
-        paginator.send_keys(Keys.CONTROL + "a");
-        paginator.send_keys(Keys.DELETE);
-        paginator.send_keys(page)
-        paginator.send_keys(Keys.ENTER)
-
-        # sometimes the server struggles here, so let's restart and retry
-        try:
-            results = self.browser.wait_for('#tabelaResultado')
-        except TimeoutException as error:
-            self.start_page()
-            retries -= 1
-            if retries:
-                return self.parse_page(page, retries)
-            self.logger.error(f'Cannot find any rows for page {page}')
-            return
+    def parse_page(self, page):
+        self.start_page(page)
+        self.logger.debug(f'Crawling page {page} of {self.total_pages}')
+        results = self.browser.wait_for(
+            '#tabelaResultado',
+            reload_method=self.start_page,
+            reload_args=(page,),
+            logger=self.logger,
+            error_message=f'Cannot find any rows for page {page}'
+        )
 
         yield from (
             self.parse_row(row)
@@ -103,6 +116,15 @@ class DistritoFederalSpider(SeleniumSpider):
         )
 
     def read_tooltip(self, row):
+        selector = '.jquerybubblepopup-innerHtml'
         self.browser.hover(row.find_element_by_class_name('botaoAjuda'))
-        tooltip = self.browser.wait_for('.jquerybubblepopup-innerHtml')
-        return tooltip.text
+        tooltip = self.browser.wait_for(selector)
+
+        # sometimes browser cannot read the text, so let's try an alternative
+        try:
+            text = tooltip.text
+        except StaleElementReferenceException:
+            tooltip = self.browser.find_element_by_css_selector(selector)
+            text = tooltip.text
+
+        return text
