@@ -2,3 +2,6 @@
 .env
 .pytest_cache/
 __pycache__
+data/*.csv
+data/*.json
+data/*.sqlite

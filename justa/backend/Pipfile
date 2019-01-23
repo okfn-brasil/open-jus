@@ -1,0 +1,21 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+django-extensions = "*"
+ipdb = "*"
+pytest = "*"
+pytest-django = "*"
+django-test-without-migrations = "*"
+mixer = "*"
+
+[packages]
+django = "*"
+python-decouple = "*"
+dj-database-url = "*"
+restless = "*"
+
+[requires]
+python_version = "3.7"

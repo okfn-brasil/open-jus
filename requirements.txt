@@ -1,5 +1,0 @@
-git+https://github.com/scrapinghub/spidermon.git#egg=spidermon[monitoring,validation]
-python-decouple==3.1
-schematics==2.1.0
-scrapy==1.5.1
-selenium==3.141.0

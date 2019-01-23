@@ -1,15 +1,28 @@
 version: "3"
 services:
 
+  django:
+    build:
+      context: justa/backend
+    env_file:
+      - .env
+    volumes:
+      - ./justa/backend:/justa
+      - ./data:/mnt/data
+    ports:
+      - 8000:8000
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
   scrapy:
     build:
-      context: .
+      context: justa/crawler
     links:
       - chrome
     env_file:
       - .env
     volumes:
-      - ./:/justa
+      - ./justa/crawler:/justa
+      - ./data:/mnt/data
     depends_on:
       - chrome
     command: ["scrapy", "crawl", "distrito_federal"]
