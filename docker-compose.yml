@@ -9,6 +9,8 @@ services:
     volumes:
       - ./justa/backend:/justa
       - ./data:/mnt/data
+    depends_on:
+      - postgres
     ports:
       - 8000:8000
     command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
@@ -25,9 +27,21 @@ services:
       - ./data:/mnt/data
     depends_on:
       - chrome
+      - postgres
     command: ["scrapy", "crawl", "distrito_federal"]
 
   chrome:
     image: selenium/standalone-chrome
     ports:
       - 4444:4444
+
+  postgres:
+    image: postgres:11.1-alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: justa
+      POSTGRES_PASSWORD: justa
+      POSTGRES_DB: justa
+    volumes:
+      - ./data/db:/var/lib/postgresql/data

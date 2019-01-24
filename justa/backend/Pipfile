@@ -14,6 +14,7 @@ dj-database-url = "*"
 django = "*"
 django-extensions = "*"
 django-test-without-migrations = "*"
+psycopg2-binary = "*"
 python-decouple = "*"
 restless = "*"
 
