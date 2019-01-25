@@ -12,6 +12,7 @@ from justa.spiders import SeleniumSpider
 
 class DistritoFederalSpider(SeleniumSpider):
     name = 'distrito_federal'
+    abbr = 'DF'
     allowed_domains = ['tjdft.jus.br']
     params = urlencode({
         'visaoId': 'tjdf.sistj.acordaoeletronico.buscaindexada.apresentacao.VisaoBuscaAcordao',
