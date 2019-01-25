@@ -66,6 +66,16 @@ class RemoteSeleniumDriver(webdriver.Remote):
             element = self.find_element_by_css_selector(element_or_css)
         ActionChains(self).move_to_element(element).perform()
 
+    def css(self, *args, **kwargs):
+        """Shortcurt for find_elements_by_css_selector. Returns a single
+        element if only one is found, or a sequence of elements if more than
+        one is found."""
+        elements = self.find_elements_by_css_selector(*args, **kwargs)
+        if len(elements) == 1:
+            return elements[0]
+
+        return elements
+
 
 class SeleniumSpider(Spider):
 

@@ -12,7 +12,6 @@ from justa.spiders import SeleniumSpider
 
 class DistritoFederalSpider(SeleniumSpider):
     name = 'distrito_federal'
-    allowed_domains = ['tjdft.jus.br']
     params = urlencode({
         'visaoId': 'tjdf.sistj.acordaoeletronico.buscaindexada.apresentacao.VisaoBuscaAcordao',
         'nomeDaPagina': 'buscaLivre2',
@@ -124,7 +123,7 @@ class DistritoFederalSpider(SeleniumSpider):
         try:
             text = tooltip.text
         except StaleElementReferenceException:
-            tooltip = self.browser.find_element_by_css_selector(selector)
+            tooltip = self.browser.css(selector)
             text = tooltip.text
 
         return text
