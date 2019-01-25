@@ -5,11 +5,11 @@ from justa.db import database
 
 class CourtOrder(Model):
     source = CharField(max_length=16)
-    number = CharField(max_length=32)
+    number = CharField(max_length=64)
     name = CharField(max_length=128)
     date = DateField()
     body = CharField(max_length=255, default='')
-    text = CharField(max_length=255)
+    text = TextField()
 
     class Meta:
         database = database
