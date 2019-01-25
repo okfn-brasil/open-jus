@@ -11,7 +11,7 @@ class CourtOrder(models.Model):
 
     class Meta:
         ordering = ('-date', 'name')
-        unique_together = (("source", "number"),)
+        unique_together = (('source', 'number', 'name', 'date', 'body'),)
         indexes = [
             models.Index(fields=['date']),
             models.Index(fields=['body']),
