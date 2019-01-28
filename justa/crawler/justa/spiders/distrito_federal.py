@@ -5,7 +5,7 @@ from urllib.parse import urlencode
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import StaleElementReferenceException
 
-from justa.items import JustaItem
+from justa.items import CourtOrder
 from justa.settings import SELENIUM_DRIVE_URL
 from justa.spiders import SeleniumSpider
 
@@ -108,7 +108,7 @@ class DistritoFederalSpider(SeleniumSpider):
         _, number, name, date, body, _, alt_text = columns
         text = self.read_tooltip(row)
         date = datetime.strptime(date, '%d/%m/%Y').date()
-        return JustaItem(
+        return CourtOrder(
             number=number,
             name=name,
             date=date,

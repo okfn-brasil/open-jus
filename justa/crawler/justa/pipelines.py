@@ -1,10 +1,12 @@
 from justa.models import CourtOrder
-from justa.spiders.distrito_federal import DistritoFederalSpider
 
 
 class JustaPipeline(object):
 
     def process_item(self, item, spider):
+        if not isinstance(item, CourtOrder):
+            return  # no need to save court order reference numbers
+
         defaults = dict(item)
         defaults['source'] = spider.abbr
         data = {k: v for k, v in defaults.items() if k is not 'text'}

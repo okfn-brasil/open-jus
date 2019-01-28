@@ -97,7 +97,7 @@ ITEM_PIPELINES = {
 
 SPIDERMON_ENABLED = True
 SPIDERMON_VALIDATION_MODELS = (
-     'justa.validators.JustaItemModel',
+     'justa.validators.CourtOrderModel',
 )
 SPIDERMON_SPIDER_CLOSE_MONITORS = (
     'justa.monitors.distrito_federal.DistritoFederalMonitorSuite',
