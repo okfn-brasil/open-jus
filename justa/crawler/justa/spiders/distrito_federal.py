@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from time import sleep
 from urllib.parse import urlencode
 
 from selenium.webdriver.common.keys import Keys
@@ -50,18 +51,20 @@ class DistritoFederalSpider(SeleniumSpider):
             yield from self.parse_page(page)
 
     def start_page(self, page=1):
-        self.browser.get(self.url)
-        button = self.browser.wait_for(
-            '#botao_pesquisar',
-            reload_method=self.start_page,
-            reload_args=(page,),
-            logger=self.logger,
-            error_message='Could not load the initial form'
-        )
-        button.click()  # (re)post form
+        button = '#botao_pesquisar'
+        self.browser.visit(self.url)
+        assert self.browser.is_element_present_by_css(button, wait_time=60)
+        self.browser.find_by_css(button).click()
 
         if page > 1:
-            paginator = self.browser.wait_for('#numeroDaPaginaAtual')
+            field = '#numeroDaPaginaAtual'
+            assert self.browser.is_element_present_by_css(field, wait_time=60)
+
+            # We need to send some keys, something not implemented in Splinter
+            # yet, but that will be possible soon:
+            # https://github.com/cobrateam/splinter/issues/572
+            # While this isn't possible we access the original Selenium element
+            paginator = self.browser.find_by_css(field).first._element
             paginator.send_keys(Keys.CONTROL + "a");
             paginator.send_keys(Keys.DELETE);
             paginator.send_keys(page)
@@ -72,15 +75,12 @@ class DistritoFederalSpider(SeleniumSpider):
         if getattr(self, '_total_pages', None):
             return self._total_pages
 
-        pattern = r'Total de páginas: (?P<total>\d+)\.'
-        contents = self.browser.wait_for(
-            '#div_conteudoGeral',
-            reload_method=self.start_page,
-            logger=self.logger,
-            error_message='Could not load the total amount of pages'
-        )
-        match = re.search(pattern, contents.text)
+        selector = '#div_conteudoGeral'
+        assert self.browser.is_element_present_by_css(selector, wait_time=60)
 
+        contents = self.browser.find_by_css(selector)
+        pattern = r'Total de páginas: (?P<total>\d+)\.'
+        match = re.search(pattern, contents.text)
         self._total_pages = int(match.group('total'))
         self.logger.debug(f'Total pages to crawl: {self._total_pages}')
         return self.total_pages
@@ -88,21 +88,14 @@ class DistritoFederalSpider(SeleniumSpider):
     def parse_page(self, page):
         self.start_page(page)
         self.logger.debug(f'Crawling page {page} of {self.total_pages}')
-        results = self.browser.wait_for(
-            '#tabelaResultado',
-            reload_method=self.start_page,
-            reload_args=(page,),
-            logger=self.logger,
-            error_message=f'Cannot find any rows for page {page}'
-        )
+        selector = '#tabelaResultado'
+        assert self.browser.is_element_present_by_css(selector, wait_time=60)
 
-        yield from (
-            self.parse_row(row)
-            for row in results.find_elements_by_css_selector('tbody tr')
-        )
+        rows = self.browser.find_by_css(selector).find_by_css('tbody tr')
+        yield from (self.parse_row(row) for row in rows)
 
     def parse_row(self, row):
-        columns = (td.text for td in row.find_elements_by_tag_name('td'))
+        columns = (td.text for td in row.find_by_css('td'))
         _, number, name, date, body, _, alt_text = columns
         text = self.read_tooltip(row)
         date = datetime.strptime(date, '%d/%m/%Y').date()
@@ -114,16 +107,16 @@ class DistritoFederalSpider(SeleniumSpider):
             text=text or alt_text
         )
 
-    def read_tooltip(self, row):
+    def read_tooltip(self, row, mouse_over=True):
+        if mouse_over:
+            row.find_by_css('.botaoAjuda').mouse_over()
+
         selector = '.jquerybubblepopup-innerHtml'
-        self.browser.hover(row.find_element_by_class_name('botaoAjuda'))
-        tooltip = self.browser.wait_for(selector)
+        assert self.browser.is_element_present_by_css(selector, wait_time=60)
 
-        # sometimes browser cannot read the text, so let's try an alternative
         try:
-            text = tooltip.text
+            return self.browser.find_by_css(selector).first.text
         except StaleElementReferenceException:
-            tooltip = self.browser.css(selector)
-            text = tooltip.text
-
-        return text
+            # not sure why Chrome complains here from time to time, so retry
+            sleep(0.5)
+            return self.read_tooltip(row, mouse_over=False)
