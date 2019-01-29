@@ -4,17 +4,18 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-django-extensions = "*"
 ipdb = "*"
 pytest = "*"
 pytest-django = "*"
-django-test-without-migrations = "*"
 mixer = "*"
 
 [packages]
-django = "*"
-python-decouple = "*"
 dj-database-url = "*"
+django = "*"
+django-extensions = "*"
+django-test-without-migrations = "*"
+psycopg2-binary = "*"
+python-decouple = "*"
 restless = "*"
 
 [requires]

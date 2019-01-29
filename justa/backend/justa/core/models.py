@@ -3,15 +3,15 @@ from django.db import models
 
 class CourtOrder(models.Model):
     source = models.CharField(max_length=16)
-    number = models.CharField(max_length=32)
+    number = models.CharField(max_length=64)
     name = models.CharField(max_length=128)
     date = models.DateField()
-    body = models.CharField(max_length=255, default='')
-    text = models.CharField(max_length=255)
+    body = models.TextField(max_length=255, default='')
+    text = models.TextField()
 
     class Meta:
         ordering = ('-date', 'name')
-        unique_together = (("source", "number"),)
+        unique_together = (('source', 'number', 'name', 'date', 'body'),)
         indexes = [
             models.Index(fields=['date']),
             models.Index(fields=['body']),

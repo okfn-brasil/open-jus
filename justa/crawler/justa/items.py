@@ -6,7 +6,7 @@
 from scrapy import Field, Item
 
 
-class JustaItem(Item):
+class CourtOrder(Item):
     number = Field()
     name = Field()
     date = Field()

@@ -67,6 +67,7 @@ EXTENSIONS = {
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'spidermon.contrib.scrapy.pipelines.ItemValidationPipeline': 800,
+    'justa.pipelines.JustaPipeline': 900,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -96,7 +97,7 @@ ITEM_PIPELINES = {
 
 SPIDERMON_ENABLED = True
 SPIDERMON_VALIDATION_MODELS = (
-     'justa.validators.JustaItemModel',
+     'justa.validators.CourtOrderModel',
 )
 SPIDERMON_SPIDER_CLOSE_MONITORS = (
     'justa.monitors.distrito_federal.DistritoFederalMonitorSuite',
