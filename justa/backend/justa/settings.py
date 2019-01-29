@@ -79,13 +79,7 @@ WSGI_APPLICATION = 'justa.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES = {
-    'default': config(
-        'DATABASE_URL',
-        default='sqlite:////mnt/data/django.sqlite',
-        cast=parse
-    )
-}
+DATABASES = {'default': config('DATABASE_URL', cast=parse)}
 
 
 # Password validation

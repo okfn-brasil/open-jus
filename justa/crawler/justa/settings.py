@@ -69,6 +69,7 @@ EXTENSIONS = {
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'spidermon.contrib.scrapy.pipelines.ItemValidationPipeline': 800,
+    'justa.pipelines.JustaPipeline': 900,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
