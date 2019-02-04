@@ -1,0 +1,5 @@
+requests
+rows
+six
+splinter
+tqdm
