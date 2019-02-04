@@ -36,3 +36,12 @@ $ docker-compose run --rm <service> py.test
 ```
 
 In which `<service>` can be either `scrapy` or `django`.
+
+
+## Tools
+
+Inside `tools` directory you'll find some scripts to help during project
+development:
+
+- `rds2csv.py`: converts RDS files to CSV (only the first data frame), needs to
+  `pip install pandas pyreadr`. Useful to convert some TJ-SP files;
