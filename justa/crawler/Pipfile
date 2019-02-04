@@ -16,6 +16,7 @@ schematics = "*"
 scrapy = "*"
 selenium = "*"
 spidermon = {extras = ["monitoring", "validation"],version = "*"}
+splinter = "*"
 
 [requires]
 python_version = "3.7"

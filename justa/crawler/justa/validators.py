@@ -8,3 +8,8 @@ class CourtOrderModel(Model):
     date = DateType(required=True)
     text = StringType(required=True)
     body = StringType()
+
+
+class CourtOrderReferenceModel(Model):
+    number = StringType(required=True)
+    source = StringType(required=True)
