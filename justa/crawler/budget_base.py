@@ -1,7 +1,8 @@
+import io
 from collections import namedtuple
 
+import requests
 import rows
-import rows.utils
 import splinter
 
 
@@ -10,9 +11,11 @@ Action = namedtuple("Action", ["year", "state", "name", "code"])
 
 def get_actions_for_state(state):
     url = "https://docs.google.com/spreadsheets/d/1epxFffymqv1t2s37rQ-p5eKpvecOIBzCfJPLI53wYTY/export?format=csv&id=1epxFffymqv1t2s37rQ-p5eKpvecOIBzCfJPLI53wYTY&gid=1565988556"
+    response = requests.get(url)
+    table = rows.import_from_csv(io.BytesIO(response.content), encoding="utf-8")
     return [
         Action(year=row.ano, state=row.estado, name=row.acao, code=row.cod_acao)
-        for row in rows.utils.import_from_uri(url)
+        for row in table
         if row.estado == state and all(row._asdict().values())
     ]
 
