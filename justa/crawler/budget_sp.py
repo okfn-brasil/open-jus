@@ -11,7 +11,7 @@ class SaoPauloBudgetExecutionSpider(BaseBudgetExecutionSpider):
     value_to_wait_for = "Pesquisar"
 
     def select_year(self, year):
-        select = self.browser.find_by_xpath("//select[contains(@name, 'Ano')]")[0]
+        select = self.browser.find_by_xpath("//select[contains(@name, 'Ano')]").first
         select.select_by_text(str(year))
         self.wait()
 
@@ -35,15 +35,15 @@ class SaoPauloBudgetExecutionSpider(BaseBudgetExecutionSpider):
             )
         )
         assert len(actions) == 1
-        select_action = self.browser.find_by_xpath("//select[contains(@name, 'Acao')]")[
-            0
-        ]
+        select_action = self.browser.find_by_xpath(
+            "//select[contains(@name, 'Acao')]"
+        ).first
         action_text = actions[0].text
         select_action.select_by_text(action_text)
         self.wait()
 
     def do_search(self):
-        self.browser.find_by_value("Pesquisar")[0].click()
+        self.browser.find_by_value("Pesquisar").first.click()
         self.wait()
 
     def parse_budget(self):
@@ -70,15 +70,3 @@ class SaoPauloBudgetExecutionSpider(BaseBudgetExecutionSpider):
         self.select_action(action)
         self.do_search()
         return self.parse_budget()
-
-
-if __name__ == "__main__":
-    scraper = SaoPauloBudgetExecutionScraper()
-    for action in get_actions_for_state("SP"):
-        print(
-            "Downloading SP budget execution for {}/{}".format(action.year, action.code)
-        )
-        table = scraper.execute(action.year, action.code)
-        output_filename = "SP-{}-{}.csv".format(action.year, action.code)
-        rows.export_to_csv(table, output_filename)
-    scraper.close()
