@@ -1,0 +1,6 @@
+lxml
+requests
+rows
+six
+splinter
+tqdm
