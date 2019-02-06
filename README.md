@@ -9,7 +9,7 @@
 
 ### Crawler
 
-Having `distrito_federal` as a spider and `INFO` as the desired log level:
+Having `distrito_federal` as a spider and `DEBUG` as the desired log level:
 
 ```console
 $ docker-compose run --rm scrapy scrapy crawl distrito_federal --loglevel=DEBUG
