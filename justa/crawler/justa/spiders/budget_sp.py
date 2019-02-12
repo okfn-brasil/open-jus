@@ -1,12 +1,13 @@
 import io
-import time
 
 import rows
 
-from budget_base import get_actions_for_state, BaseBudgetExecutionSpider, BRDecimalField
+from justa.spiders.budget_base import BaseBudgetExecutionSpider, BRDecimalField
 
 
 class SaoPauloBudgetExecutionSpider(BaseBudgetExecutionSpider):
+    name = "budget_sp"
+    state = "SP"
     url = "https://www.fazenda.sp.gov.br/SigeoLei131/Paginas/FlexConsDespesa.aspx"
     value_to_wait_for = "Pesquisar"
 
@@ -64,9 +65,9 @@ class SaoPauloBudgetExecutionSpider(BaseBudgetExecutionSpider):
         return rows.import_from_dicts(result)
 
     def execute(self, year, action):
-        self.start()
         self.select_year(year)
         self.check_all_phases()
         self.select_action(action)
         self.do_search()
-        return self.parse_budget()
+        for row in self.parse_budget():
+            yield row._asdict()

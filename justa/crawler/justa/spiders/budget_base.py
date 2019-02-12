@@ -5,6 +5,9 @@ import requests
 import rows
 import splinter
 
+from justa.settings import SELENIUM_DRIVE_URL
+from justa.spiders import SeleniumSpider
+
 
 Action = namedtuple("Action", ["year", "state", "name", "code"])
 
@@ -20,30 +23,21 @@ def get_actions_for_state(state):
     ]
 
 
-class BaseBudgetExecutionSpider:
-    url = None  # Base URL used on `start` method
+class BaseBudgetExecutionSpider(SeleniumSpider):
+    start_urls = (SELENIUM_DRIVE_URL,)  # fake (real ones happens in Selenium)
+    state = None  # TODO: set state code
+    url = None  # Base URL used on `start_page` method
     value_to_wait_for = ""  # Value of an element to wait during operations
     value_wait_timeout = 30  # Seconds to wait for this value to be shown in the page
 
-    def __init__(self, headless=True):
-        self.browser_args = []
-        self.browser_kwargs = {"headless": headless}
-        self.headless = headless
-        self._browser = None
-
-    def get_browser_options(self):
-        return None
-
     @property
-    def browser(self):
-        if self._browser is None:
-            self._browser = splinter.Browser(
-                "chrome",
-                options=self.get_browser_options(),
-                *self.browser_args,
-                **self.browser_kwargs,
-            )
-        return self._browser
+    def actions(self):
+        return get_actions_for_state(self.state)
+
+    def parse(self, _):
+        self.start_page()
+        for action in self.actions:
+            yield from self.execute(action.year, action.code)
 
     def wait(self):
         if self.value_to_wait_for:
@@ -51,7 +45,7 @@ class BaseBudgetExecutionSpider:
                 self.value_to_wait_for, wait_time=self.value_wait_timeout
             )
 
-    def start(self):
+    def start_page(self):
         self.browser.visit(self.url)
         self.wait()
 

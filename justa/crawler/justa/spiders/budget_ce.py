@@ -1,18 +1,24 @@
-import io
 import glob
 import time
 from pathlib import Path
 
 import rows
 from selenium import webdriver
-from splinter import Browser
 
-from budget_base import get_actions_for_state, BaseBudgetExecutionSpider, BRDecimalField
+from justa.spiders.budget_base import BaseBudgetExecutionSpider, BRDecimalField
 
 
 class CearaBudgetExecutionSpider(BaseBudgetExecutionSpider):
-    url = "http://web3.seplag.ce.gov.br/siofconsulta/Paginas/frm_consulta_execucao.aspx"
     download_path = Path("/mnt/data/download")  # TODO: get from justa.settings?
+    name = "budget_ce"
+    preferences = {
+        "disable-popup-blocking": "true",
+        "download.default_directory": str(download_path.absolute()),
+        "download.directory_upgrade": "true",
+        "download.prompt_for_download": "false",
+    }
+    state = "CE"
+    url = "http://web3.seplag.ce.gov.br/siofconsulta/Paginas/frm_consulta_execucao.aspx"
     value_to_wait_for = "Visualizar"
 
     def __init__(self, *args, **kwargs):
@@ -23,17 +29,6 @@ class CearaBudgetExecutionSpider(BaseBudgetExecutionSpider):
             )
         if not self.download_path.exists():
             self.download_path.mkdir(parents=True)
-
-    def get_browser_options(self):
-        options = webdriver.ChromeOptions()
-        preferences = {
-            "disable-popup-blocking": "true",
-            "download.default_directory": str(self.download_path.absolute()),
-            "download.directory_upgrade": "true",
-            "download.prompt_for_download": "false",
-        }
-        options.add_experimental_option("prefs", preferences)
-        return options
 
     def select_value(self, name, value, wait=True):
         select = self.browser.find_by_xpath(
@@ -139,7 +134,6 @@ class CearaBudgetExecutionSpider(BaseBudgetExecutionSpider):
         return result
 
     def execute(self, year, action):
-        self.start()
         self.select_year(year)
         self.select_month("Dezembro")  # December has the cumulative for the year
         self.select_action(action)
@@ -148,4 +142,5 @@ class CearaBudgetExecutionSpider(BaseBudgetExecutionSpider):
         filename = self.do_search()
         result = self.parse_budget(filename, year, action)
 
-        return rows.import_from_dicts(result)
+        for row in rows.import_from_dicts(result):
+            yield row._asdict()
