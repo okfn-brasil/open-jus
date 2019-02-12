@@ -14,9 +14,9 @@ def get_actions_for_state(state):
     response = requests.get(url)
     table = rows.import_from_csv(io.BytesIO(response.content), encoding="utf-8")
     return [
-        Action(year=row.ano, state=row.estado, name=row.acao, code=row.cod_acao)
+        Action(year=row.ano, state=row.estado, name=row.nome_acao, code=row.codigo_acao)
         for row in table
-        if row.estado == state and all(row._asdict().values())
+        if row.estado == state and all((row.ano, row.estado, row.codigo_acao, row.nome_acao))
     ]
 
 
