@@ -38,7 +38,7 @@ class SaoPauloBudgetExecutionSpider(BaseBudgetExecutionSpider):
         select_action = self.browser.find_by_xpath(
             "//select[contains(@name, 'Acao')]"
         ).first
-        action_text = actions[0].text
+        action_text = actions.first.text
         select_action.select_by_text(action_text)
         self.wait()
 

@@ -48,8 +48,7 @@ class BaseBudgetExecutionSpider:
     def wait(self):
         if self.value_to_wait_for:
             self.browser.is_element_present_by_value(
-                self.value_to_wait_for,
-                wait_time=self.value_wait_timeout,
+                self.value_to_wait_for, wait_time=self.value_wait_timeout
             )
 
     def start(self):
