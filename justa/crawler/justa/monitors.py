@@ -10,6 +10,8 @@ class MinimumItemsMonitor(Monitor):
     @monitors.name('Minimum number of items')
     def test_minimum_number_of_items(self):
         spider = self.data['spider']
+        if not hasattr(spider, "abbr"):
+            return
         items_extracted = self.data.stats.get('item_scraped_count', 0)
         minimum_expected = self.minimum_expected.get(spider.abbr, 0)
         self.assertGreaterEqual(items_extracted, minimum_expected)
