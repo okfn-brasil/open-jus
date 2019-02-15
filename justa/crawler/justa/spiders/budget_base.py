@@ -38,6 +38,15 @@ class BaseBudgetExecutionSpider(SeleniumSpider):
         for action in self.actions:
             yield from self.execute(action.year, action.code)
 
+    def should_wait(self):
+        return (
+            bool(self.value_to_wait_for)
+            and
+            self.browser.is_element_present_by_value(
+                    self.value_to_wait_for, wait_time=0
+            )
+        )
+
     def wait(self):
         if self.value_to_wait_for:
             self.browser.is_element_present_by_value(
