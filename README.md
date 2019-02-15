@@ -24,12 +24,22 @@ Having `distrito_federal` as a spider and `DEBUG` as the desired log level:
 docker-compose run --rm scrapy scrapy crawl distrito_federal --loglevel=INFO
 ```
 
-If you need to see the browser running (some crawlers won't work on headless
-mode) then export the display and mount the X11 socket:
+If you need to see the browser running you must replace the Firefox or Chrome
+images with `selenium/standalone-firefox-debug` and/or
+`selenium/standalone-chrome-debug` and then connect to its VNC server (Chrome
+will be exported to port 5900 and Firefox to 5901).
+
+Example for Firefox:
 
 ```console
-docker-compose run --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix \
-                   scrapy scrapy crawl distrito_federal --loglevel=INFO
+docker-compose stop firefox
+docker-compose rm -f firefox
+sed -i 's/standalone-firefox$/standalone-firefox-debug/' docker-compose.yml
+docker-compose up -d firefox
+
+# Now, run the scraper and in parallel connect to VNC:
+docker-compose run --rm scrapy scrapy crawl budget_ce -a headless=false --loglevel=INFO
+xtightvncviewer 127.0.0.1:5901  # The password is "secret"
 ```
 
 ### Backend

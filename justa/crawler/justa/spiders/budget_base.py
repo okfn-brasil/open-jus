@@ -5,7 +5,6 @@ import requests
 import rows
 import splinter
 
-from justa.settings import SELENIUM_DRIVE_URL
 from justa.spiders import SeleniumSpider
 
 
@@ -24,7 +23,7 @@ def get_actions_for_state(state):
 
 
 class BaseBudgetExecutionSpider(SeleniumSpider):
-    start_urls = (SELENIUM_DRIVE_URL,)  # fake (real ones happens in Selenium)
+    start_urls = ("http://justa.org.br/",)  # fake (real ones happens in Selenium)
     state = None  # TODO: set state code
     url = None  # Base URL used on `start_page` method
     value_to_wait_for = ""  # Value of an element to wait during operations

@@ -9,13 +9,17 @@ from justa.spiders.budget_base import BaseBudgetExecutionSpider, BRDecimalField
 
 
 class CearaBudgetExecutionSpider(BaseBudgetExecutionSpider):
-    download_path = Path("/mnt/data/download")  # TODO: get from justa.settings?
+    browser_name = "firefox"
+    download_path = Path("/mnt/data/")  # TODO: get from justa.settings?
     name = "budget_ce"
     preferences = {
-        "disable-popup-blocking": "true",
-        "download.default_directory": str(download_path.absolute()),
-        "download.directory_upgrade": "true",
-        "download.prompt_for_download": "false",
+        "browser.download.folderList": 2,
+        "browser.download.dir": str(download_path.absolute()),
+        "browser.download.lastDir": str(download_path.absolute()),
+        "browser.download.manager.showWhenStarting": False,
+        "browser.helperApps.neverAsk.saveToDisk": "application/vnd.ms-excel",
+        "browser.download.panel.shown": False,
+        "browser.download.manager.useWindow": False,
     }
     state = "CE"
     url = "http://web3.seplag.ce.gov.br/siofconsulta/Paginas/frm_consulta_execucao.aspx"

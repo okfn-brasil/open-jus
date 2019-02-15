@@ -26,6 +26,7 @@ services:
       - ./justa/crawler:/justa
       - ./data:/mnt/data
     depends_on:
+      - firefox
       - chrome
       - postgres
     command: ["scrapy", "crawl", "distrito_federal"]
@@ -33,7 +34,16 @@ services:
   chrome:
     image: selenium/standalone-chrome
     ports:
-      - 4444:4444
+      - 5900:5900
+    volumes:
+      - ./data:/mnt/data
+
+  firefox:
+    image: selenium/standalone-firefox
+    ports:
+      - 5901:5900
+    volumes:
+      - ./data:/mnt/data
 
   postgres:
     image: postgres:11.1-alpine

@@ -7,7 +7,6 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import StaleElementReferenceException
 
 from justa.items import CourtOrder
-from justa.settings import SELENIUM_DRIVE_URL
 from justa.spiders import SeleniumSpider
 
 
@@ -44,7 +43,7 @@ class DistritoFederalSpider(SeleniumSpider):
         'https://pesquisajuris.tjdft.jus.br/'
         f'IndexadorAcordaos-web/sistj?{params}'
     )
-    start_urls = (SELENIUM_DRIVE_URL,)  # fake (real ones happens in Selenium)
+    start_urls = ("http://justa.org.br/",)  # fake (real ones happens in Selenium)
 
     def parse(self, _):
         self.start_page()
