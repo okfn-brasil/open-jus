@@ -1,5 +1,6 @@
 import glob
 import logging
+import os
 import time
 from pathlib import Path
 
@@ -71,6 +72,8 @@ class CearaBudgetExecutionSpider(BaseBudgetExecutionSpider):
             item_index, method_name = 0, "select"
 
         if wait:
+            # TODO: what if the value is already selected? It may be waiting
+            # forever
             with wait_for_page_load(self.browser, self.value_to_wait_for):
                 select = self.browser.find_by_xpath(select_xpath).first
                 getattr(select, method_name)(value)
@@ -150,7 +153,12 @@ class CearaBudgetExecutionSpider(BaseBudgetExecutionSpider):
                 # ".part" extension means download didn't finished
                 diff = set()
         assert len(diff) == 1, diff
-        return diff.pop()
+        filename = diff.pop()
+        filesize = 0
+        while filesize == 0:  # Wait for the file to be written by the browser
+            filesize = os.stat(filename).st_size
+            time.sleep(0.1)
+        return filename
 
     def parse_budget(self, filename, year, action):
         logging.info(f"[Budget-CE]   Parsing budget {filename}")
