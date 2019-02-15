@@ -4,8 +4,8 @@ from justa.models import CourtOrder
 class JustaPipeline(object):
 
     def process_item(self, item, spider):
-        if not isinstance(item, CourtOrder):
-            return  # no need to save court order reference numbers
+        if isinstance(item, dict):
+            return item
 
         defaults = dict(item)
         defaults['source'] = spider.abbr
