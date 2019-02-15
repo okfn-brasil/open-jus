@@ -83,6 +83,9 @@ class CearaBudgetExecutionSpider(BaseBudgetExecutionSpider):
             "//input[@type = 'radio' and contains(@name, '{}')]".format(name)
         )
         desired_radio = [radio for radio in radios if radio.value == value][0]
+        if desired_radio.checked:  # Checked already, do nothing
+            return
+
         if wait:
             with wait_for_page_load(self.browser, self.value_to_wait_for):
                 desired_radio.check()
@@ -124,7 +127,7 @@ class CearaBudgetExecutionSpider(BaseBudgetExecutionSpider):
         """
         logging.info(f"[Budget-CE]   Selecting report ({area}, {inner_area})")
 
-        self.radio_check("Relatorio", area)
+        self.radio_check("Relatorio", area, wait=True)
         self.select_value("Relatorio", inner_area, wait=False)
         self.radio_check("Formato", "Xlss", wait=False)  # Xlss = "Planilha"
 
