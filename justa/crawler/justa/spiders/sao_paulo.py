@@ -110,6 +110,14 @@ class TJSPFullTextSpider(SeleniumSpider):
 
     @property
     def numbers(self):
+        if not Path(self.pdf).exists():
+            self.logger.error(
+                f'{self.pdf} does not exists. Use -a pdf=/path/to/lai.pdf to '
+                'provide an existing path for the PDF with the court orders '
+                'numbers received via LAI'
+            )
+            return
+
         self.logger.info(f'Reading {self.pdf}')
         for page in rows.plugins.pdf.pdf_to_text(self.pdf):
             yield from re.findall(self.pattern, page)
