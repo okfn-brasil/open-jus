@@ -19,3 +19,16 @@ class CourtOrderReference(Item):
     """Number of court orders to be processed later on"""
     number = Field()
     source = Field()
+
+
+class CourtOrderTJSP(Item):
+    """Court orders from TJSP with full text"""
+    number = Field()
+    status = Field()
+    source_numbers = Field()
+    reporter = Field()
+    category = Field()
+    petitioner = Field()
+    requested = Field()
+    decision = Field()
+    decision_date = Field()

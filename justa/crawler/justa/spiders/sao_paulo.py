@@ -1,17 +1,21 @@
 import re
+from datetime import datetime
 from math import ceil
+from pathlib import Path
 from urllib.parse import urlencode
 
+import rows
 from scrapy import Request
 from selenium.webdriver.common.keys import Keys
 
-from justa.items import CourtOrderReference
+from justa.items import CourtOrderReference, CourtOrderTJSP
 from justa.spiders import SeleniumSpider
 
 
-class SaoPauloSpider(SeleniumSpider):
-    name = 'sao_paulo'
-    abbr = 'SP'
+class TJSPNumbersSpider(SeleniumSpider):
+    """Spider to list process numbers based on classes"""
+    name = 'tjsp_numbers'
+    minimum_items_expected = 826
     custom_settings = {'ROBOTSTXT_OBEY': False}
     url = 'https://esaj.tjsp.jus.br/cjsg/consultaCompleta.do'
     page_url = 'https://esaj.tjsp.jus.br/cjsg/trocaDePagina.do'
@@ -89,3 +93,124 @@ class SaoPauloSpider(SeleniumSpider):
             number = item.extract().strip()
             self.logger.debug(f'CourtOrderReference: {self.abbr} #{number}')
             yield CourtOrderReference(number=number, source=self.abbr)
+
+
+class TJSPFullTextSpider(SeleniumSpider):
+    """Spider to crawl full text court orders based on a LAI received PDF"""
+    name = 'tjsp_full_text'
+    minimum_items_expected = 865
+    url = 'https://esaj.tjsp.jus.br/cposg/open.do'
+    default_pdf = '/mnt/data/SUS-SP-TJE-1301até1812_viaLAI.pdf'
+    pattern = r'(\d{7}-\d{2}\.\d{4}).\d\.\d{2}\.(\d{4})'
+    start_urls = ('http://justa.org/',)  # fake (real ones happens in Selenium)
+
+    def __init__(self, pdf=None, *args, **kwargs):
+        self.pdf = pdf or self.default_pdf
+        super(TJSPFullTextSpider, self).__init__(*args, **kwargs)
+
+    @property
+    def numbers(self):
+        self.logger.info(f'Reading {self.pdf}')
+        for page in rows.plugins.pdf.pdf_to_text(self.pdf):
+            yield from re.findall(self.pattern, page)
+
+    def error_handler(self, code, forum):
+        number = f'{code}.8.26.{forum}'
+        data_dir = Path(self.pdf).parent
+        screenshot = Path(data_dir) / f'debug-{number}.'
+        filename = self.browser.screenshot(str(screenshot), full=True)
+        self.logger.info(
+            f'Unable to crawl court order {number}, '
+            f'check {filename} for details'
+        )
+
+    def parse_date(self, value, format='%d/%m/%Y'):
+        try:
+            return datetime.strptime(value, format)
+        except ValueError:
+            self.logger.error(f'Cannot parse {value} as {format} date')
+            return None
+
+    def parse_decision(self):
+        cells = tuple(td.text.strip() for td in self.browser.find_by_tag('td'))
+        labels = ('Decisão Monocrática', 'Despacho')
+
+        # get the date and the decision; skips two columns: the first columns
+        # contains the date, the second columns contains a link useless for us,
+        # and the third column the decision text
+        for current_cell, previous_cell in zip(cells[2:], cells):
+            for label in labels:
+                if current_cell.startswith(label):
+                    return self.parse_date(previous_cell), current_cell
+        return None, None
+
+    def parse_metadata(self):
+        cells = tuple(td.text.strip() for td in self.browser.find_by_tag('td'))
+        mapping = {
+            'Processo:': 'number_and_status',
+            'Números de origem:': 'source_numbers',
+            'Relator:': 'reporter',
+            'Classe:': 'category',
+            'Requerente:': 'petitioner',
+            'Requerido:': 'requested',
+            'Requerida:': 'requested',
+        }
+        data = {key: [] for key in set(mapping.values())}
+
+        # get the contents of a column based on the contents of the previous
+        # column, that is the case of a simple two columns table in which
+        # the first columns acts as a header and the second one holds the data
+        for current_cell, next_cell in zip(cells, cells[1:]):
+            key = mapping.get(current_cell)
+            if key in data:
+                data[key].append(next_cell)
+
+        output = {key: ', '.join(value) for key, value in data.items()}
+        try:
+            number, *status = output['number_and_status'].split()
+        except ValueError:
+            number, status = output['number_and_status'], []
+
+        output['number'] = number
+        output['status'] = ' '.join(status)
+        del output['number_and_status']
+        return output
+
+    def court_order(self, code, forum):
+        self.browser.visit(self.url)
+
+        # search for the court order
+        form = {'numeroDigitoAnoUnificado': code, 'foroNumeroUnificado': forum}
+        for name, value in form.items():
+            self.browser.is_element_present_by_name(name, wait_time=60)
+            self.browser.fill(name, value)
+        self.browser.find_by_id('botaoPesquisar').first.click()
+
+        # expand collapsed areas
+        self.browser.is_element_present_by_id(
+            'tabelaUltimasMovimentacoes',
+            wait_time=60
+        )
+        for link_id in ('linkpartes', 'linkmovimentacoes'):
+            if self.browser.is_element_present_by_id(link_id):
+                self.browser.find_by_id(link_id).first.click()
+
+        decision_date, decision = self.parse_decision()
+        if not decision or not decision_date:
+            self.error_handler(code, forum)
+            return
+
+        data = {'decision': decision, 'decision_date': decision_date}
+        data.update(self.parse_metadata())
+
+        if not data.get('number'):
+            self.error_handler()
+            return
+
+        return CourtOrderTJSP(**data)
+
+    def parse(self, _):
+        for code, forum in self.numbers:
+            court_order = self.court_order(code, forum)
+            if court_order:
+                yield court_order

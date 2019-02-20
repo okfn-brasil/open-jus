@@ -13,3 +13,15 @@ class CourtOrderModel(Model):
 class CourtOrderReferenceModel(Model):
     number = StringType(required=True)
     source = StringType(required=True)
+
+
+class CourtOrderTJSPModel(Model):
+    number = StringType(required=True)
+    decision = StringType(required=True)
+    decision_date = DateType(required=True)
+    status = StringType()
+    source_numbers = StringType()
+    reporter = StringType()
+    category = StringType()
+    petitioner = StringType()
+    requested = StringType()

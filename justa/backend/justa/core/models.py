@@ -18,3 +18,24 @@ class CourtOrder(models.Model):
             models.Index(fields=['name']),
             models.Index(fields=['source', 'number']),
         ]
+
+
+class CourtOrderTJSP(models.Model):
+    source = models.CharField(max_length=255)
+    number = models.CharField(max_length=255)
+    decision = models.TextField()
+    decision_date = models.DateField()
+    status = models.TextField(default='')
+    source_numbers = models.TextField(default='')
+    reporter = models.TextField(default='')
+    category = models.TextField(default='')
+    petitioner = models.TextField(default='')
+    requested = models.TextField(default='')
+
+    class Meta:
+        ordering = ('-decision_date',)
+        unique_together = (('source', 'number'))
+        indexes = [
+            models.Index(fields=['decision_date']),
+            models.Index(fields=['number'])
+        ]
