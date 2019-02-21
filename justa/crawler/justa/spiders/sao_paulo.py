@@ -172,6 +172,28 @@ class TJSPFullTextSpider(SeleniumSpider):
         name = re.sub(pattern, '', value).strip()
         return Part(name, ', '.join(attorneys))
 
+    def parse_appeals(self):
+        keywords = ('Recurso Extraordinário', 'Recurso Especial')
+        has_appeals = any(
+            self.browser.is_text_present(keyword)
+            for keyword in keywords
+        )
+        if not has_appeals:
+            return
+
+        cells = tuple(td.text.strip() for td in self.browser.find_by_tag('td'))
+        appeals = []
+
+        # get the date and the decision; skips two columns: the first columns
+        # contains the date, the second columns contains a link useless for us,
+        # and the third column the decision text
+        for current, previous in zip(cells[2:], cells):
+            for keyword in keywords:
+                if keyword in current and self.parse_date(previous):
+                    appeals.append('\n'.join((previous, current)))
+
+        return '\n\n'.join(appeals) if appeals else None
+
     def parse_metadata(self):
         cells = tuple(td.text.strip() for td in self.browser.find_by_tag('td'))
         mapping = {
@@ -210,6 +232,9 @@ class TJSPFullTextSpider(SeleniumSpider):
             part = self.parse_part(output[key])
             output[key] = part.name
             output[f'{key}_attorneys'] = part.attorneys
+
+        # parse appeals
+        output['appeals'] = self.parse_appeals()
 
         return output
 

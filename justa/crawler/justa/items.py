@@ -35,3 +35,4 @@ class CourtOrderTJSP(Item):
     requested_attorneys = Field()
     decision = Field()
     decision_date = Field()
+    appeals = Field()

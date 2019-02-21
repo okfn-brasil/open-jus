@@ -28,3 +28,4 @@ class CourtOrderTJSPModel(Model):
     petitioner_attorneys = StringType()
     requested = StringType()
     requested_attorneys = StringType()
+    appeals = StringType()

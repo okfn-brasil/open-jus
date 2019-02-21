@@ -30,6 +30,7 @@ class CourtOrderTJSP(Model):
     petitioner_attorneys = TextField(default='')
     requested = TextField(default='')
     requested_attorneys = TextField(default='')
+    appeals = TextField(default='')
 
     class Meta:
         database = database
