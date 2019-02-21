@@ -28,6 +28,7 @@ class CourtOrderTJSP(Item):
     source_numbers = Field()
     reporter = Field()
     category = Field()
+    subject = Field()
     petitioner = Field()
     requested = Field()
     decision = Field()

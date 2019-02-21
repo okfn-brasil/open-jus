@@ -25,6 +25,7 @@ class CourtOrderTJSP(Model):
     source_numbers = TextField(default='')
     reporter = TextField(default='')
     category = TextField(default='')
+    subject = TextField(default='')
     petitioner = TextField(default='')
     requested = TextField(default='')
 

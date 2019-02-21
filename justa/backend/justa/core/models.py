@@ -29,6 +29,7 @@ class CourtOrderTJSP(models.Model):
     source_numbers = models.TextField(default='')
     reporter = models.TextField(default='')
     category = models.TextField(default='')
+    subject = models.TextField(default='')
     petitioner = models.TextField(default='')
     requested = models.TextField(default='')
 

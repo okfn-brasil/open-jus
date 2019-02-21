@@ -173,6 +173,7 @@ class TJSPFullTextSpider(SeleniumSpider):
             'Requerente:': 'petitioner',
             'Requerido:': 'requested',
             'Requerida:': 'requested',
+            'Assunto:': 'subject'
         }
         data = {key: [] for key in set(mapping.values())}
 
