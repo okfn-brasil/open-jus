@@ -1,4 +1,5 @@
 import re
+from collections import namedtuple
 from datetime import datetime
 from math import ceil
 from pathlib import Path
@@ -10,6 +11,9 @@ from selenium.webdriver.common.keys import Keys
 
 from justa.items import CourtOrderReference, CourtOrderTJSP
 from justa.spiders import SeleniumSpider
+
+
+Decision = namedtuple('Decision', ('date', 'text'))
 
 
 class TJSPNumbersSpider(SeleniumSpider):
@@ -142,15 +146,22 @@ class TJSPFullTextSpider(SeleniumSpider):
     def parse_decision(self):
         cells = tuple(td.text.strip() for td in self.browser.find_by_tag('td'))
         labels = ('Decisão Monocrática', 'Despacho')
+        decisions = []
 
         # get the date and the decision; skips two columns: the first columns
         # contains the date, the second columns contains a link useless for us,
         # and the third column the decision text
-        for current_cell, previous_cell in zip(cells[2:], cells):
+        for current, previous in zip(cells[2:], cells):
             for label in labels:
-                if current_cell.startswith(label):
-                    return self.parse_date(previous_cell), current_cell
-        return None, None
+                if current.startswith(label):
+                    decision = Decision(self.parse_date(previous), current)
+                    decisions.append(decision)
+
+        if not decisions:
+            return
+
+        *_, decision = sorted(decisions, key=lambda d: len(d.text))
+        return decision
 
     def parse_metadata(self):
         cells = tuple(td.text.strip() for td in self.browser.find_by_tag('td'))
@@ -203,12 +214,12 @@ class TJSPFullTextSpider(SeleniumSpider):
             if self.browser.is_element_present_by_id(link_id):
                 self.browser.find_by_id(link_id).first.click()
 
-        decision_date, decision = self.parse_decision()
-        if not decision or not decision_date:
+        decision = self.parse_decision()
+        if not decision.text or not decision.date:
             self.error_handler(code, forum)
             return
 
-        data = {'decision': decision, 'decision_date': decision_date}
+        data = {'decision': decision.text, 'decision_date': decision.date}
         data.update(self.parse_metadata())
 
         if not data.get('number'):
