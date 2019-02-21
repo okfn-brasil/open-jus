@@ -179,7 +179,7 @@ class TJSPFullTextSpider(SeleniumSpider):
             for keyword in keywords
         )
         if not has_appeals:
-            return
+            return ''
 
         cells = tuple(td.text.strip() for td in self.browser.find_by_tag('td'))
         appeals = []
@@ -192,7 +192,7 @@ class TJSPFullTextSpider(SeleniumSpider):
                 if keyword in current and self.parse_date(previous):
                     appeals.append('\n'.join((previous, current)))
 
-        return '\n\n'.join(appeals) if appeals else None
+        return '\n\n'.join(appeals) if appeals else ''
 
     def parse_metadata(self):
         cells = tuple(td.text.strip() for td in self.browser.find_by_tag('td'))
@@ -258,7 +258,7 @@ class TJSPFullTextSpider(SeleniumSpider):
                 self.browser.find_by_id(link_id).first.click()
 
         decision = self.parse_decision()
-        if not decision.text or not decision.date:
+        if not decision or not decision.text or not decision.date:
             self.error_handler(code, forum)
             return
 
