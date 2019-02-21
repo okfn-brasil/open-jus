@@ -31,7 +31,9 @@ class CourtOrderTJSP(models.Model):
     category = models.TextField(default='')
     subject = models.TextField(default='')
     petitioner = models.TextField(default='')
+    petitioner_attorneys = models.TextField(default='')
     requested = models.TextField(default='')
+    requested_attorneys = models.TextField(default='')
 
     class Meta:
         ordering = ('-decision_date',)

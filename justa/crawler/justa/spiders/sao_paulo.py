@@ -14,6 +14,7 @@ from justa.spiders import SeleniumSpider
 
 
 Decision = namedtuple('Decision', ('date', 'text'))
+Part = namedtuple('Part', ('name', 'attorneys'))
 
 
 class TJSPNumbersSpider(SeleniumSpider):
@@ -163,6 +164,14 @@ class TJSPFullTextSpider(SeleniumSpider):
         *_, decision = sorted(decisions, key=lambda d: len(d.text))
         return decision
 
+    @staticmethod
+    def parse_part(value):
+        """Separate the name of the part from the name of the attorneys"""
+        pattern = r'Advogad[oa]: ?(?P<name>.+)'
+        attorneys = (name.strip() for name in re.findall(pattern, value))
+        name = re.sub(pattern, '', value).strip()
+        return Part(name, ', '.join(attorneys))
+
     def parse_metadata(self):
         cells = tuple(td.text.strip() for td in self.browser.find_by_tag('td'))
         mapping = {
@@ -186,14 +195,22 @@ class TJSPFullTextSpider(SeleniumSpider):
                 data[key].append(next_cell)
 
         output = {key: ', '.join(value) for key, value in data.items()}
+
+        # parse number and status
         try:
             number, *status = output['number_and_status'].split()
         except ValueError:
             number, status = output['number_and_status'], []
-
         output['number'] = number
         output['status'] = ' '.join(status)
         del output['number_and_status']
+
+        # parse parts (split names of the part from attorneys)
+        for key in ('petitioner', 'requested'):
+            part = self.parse_part(output[key])
+            output[key] = part.name
+            output[f'{key}_attorneys'] = part.attorneys
+
         return output
 
     def court_order(self, code, forum):

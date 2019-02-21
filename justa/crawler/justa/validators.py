@@ -25,4 +25,6 @@ class CourtOrderTJSPModel(Model):
     category = StringType()
     subject = StringType()
     petitioner = StringType()
+    petitioner_attorneys = StringType()
     requested = StringType()
+    requested_attorneys = StringType()

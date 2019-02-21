@@ -27,7 +27,9 @@ class CourtOrderTJSP(Model):
     category = TextField(default='')
     subject = TextField(default='')
     petitioner = TextField(default='')
+    petitioner_attorneys = TextField(default='')
     requested = TextField(default='')
+    requested_attorneys = TextField(default='')
 
     class Meta:
         database = database

@@ -30,6 +30,8 @@ class CourtOrderTJSP(Item):
     category = Field()
     subject = Field()
     petitioner = Field()
+    petitioner_attorneys = Field()
     requested = Field()
+    requested_attorneys = Field()
     decision = Field()
     decision_date = Field()
