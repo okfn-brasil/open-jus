@@ -114,3 +114,9 @@ SPIDERMON_SPIDER_CLOSE_MONITORS = ('justa.monitors.JustaMonitorSuite',)
 # https://selenium-python.readthedocs.io/
 
 SELENIUM_DRIVE_URL=config('SELENIUM_DRIVE_URL')
+
+
+# 2captcha
+# https://2captcha.com/
+
+TWO_CAPTCHA_API_KEY = config('TWO_CAPTCHA_API_KEY', default=None)

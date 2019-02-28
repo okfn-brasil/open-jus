@@ -2,12 +2,14 @@ import re
 from collections import namedtuple
 from datetime import datetime
 from pathlib import Path
+from time import sleep
 
+from requests import post
 from scrapy import Spider
 from splinter.driver.webdriver import WebDriverElement
 from splinter.driver.webdriver.remote import WebDriver
 
-from justa.settings import SELENIUM_DRIVE_URL
+from justa.settings import SELENIUM_DRIVE_URL, TWO_CAPTCHA_API_KEY
 from justa.items import CourtOrderESAJ
 
 
@@ -40,6 +42,8 @@ class ESAJSpider(SeleniumSpider):
     orders number usually collected mannualy via LAI"""
     pattern = r'(\d{7}-\d{2}\.\d{4}).\d\.\d{2}\.(\d{4})'
     start_urls = ('http://justa.org/',)  # fake (real ones happens in Selenium)
+    recaptcha = False
+    js_cache = {}
 
     def __init__(self, source=None, *args, **kwargs):
         self.source = source or self.default_source
@@ -156,20 +160,104 @@ class ESAJSpider(SeleniumSpider):
 
         return output
 
-    def search(self, code, forum):
-        self.browser.visit(self.url)
+    @staticmethod
+    def two_captcha_data(**kwargs):
+        data = dict(key=TWO_CAPTCHA_API_KEY, json=1)
+        if kwargs:
+            data.update(kwargs)
+        return data
+
+    def set_recaptcha_response_visibility(self, visible):
+        action = 'show' if visible else 'hide'
+        cached = self.js_cache.get(action)
+        if cached:
+            self.browser.execute_script(cached)
+
+        with open(Path() / 'justa' / 'js' / f'{action}_recaptcha.js') as fobj:
+            content = fobj.read()
+
+        self.js_cache[action] = content
+        self.browser.execute_script(content)
+
+    def request_recaptcha_solution(self, recaptcha_key):
+        data = self.two_captcha_data(
+            googlekey=recaptcha_key,
+            method='userrecaptcha',
+            pageurl=self.browser.url
+        )
+        response = post("http://2captcha.com/in.php", data=data)
+        return response.json().get('request')
+
+    def fetch_recaptcha_solution(self):
+        if not self.request_id:
+            return
+
+        data = self.two_captcha_data(action="get", id=self.request_id)
+        response = post("http://2captcha.com/res.php", data=data)
+        result = response.json().get('request')
+        if not result or result == 'CAPCHA_NOT_READY':
+            return
+
+        return result
+
+    def feedback_recaptcha_solution(self, success):
+        if not self.request_id:
+            return
+
+        action = 'reportgood' if success else 'reportbad'
+        data = self.two_captcha_data(action=action, id=self.request_id)
+        post("http://2captcha.com/res.php", data=data)
+
+    def solve_recaptcha(self):
+        has_recaptcha = self.browser.is_element_present_by_css(
+            '.g-recaptcha',
+            wait_time=60
+        )
+        if not has_recaptcha:
+            return
+
+        recaptcha = self.browser.find_by_css('.g-recaptcha').first
+        recaptcha_id = recaptcha._element.get_attribute('data-sitekey')
+        self.request_id = self.request_recaptcha_solution(recaptcha_id)
+
+        sleep(15)
+        result = self.fetch_recaptcha_solution()
+        while not result:
+            sleep(2)
+            result = self.fetch_recaptcha_solution()
+
+        self.set_recaptcha_response_visibility(True)
+        self.browser.fill('g-recaptcha-response', result)
+        self.set_recaptcha_response_visibility(False)
+
+    def search(self, code, forum, recaptcha=False):
+        if 'search.do' not in self.browser.url:
+            self.browser.visit(self.url)
+
         form = {'numeroDigitoAnoUnificado': code, 'foroNumeroUnificado': forum}
         for name, value in form.items():
             self.browser.is_element_present_by_name(name, wait_time=60)
             self.browser.fill(name, value)
+
+        if self.recaptcha:
+            self.solve_recaptcha()
+
         self.browser.find_by_id('botaoPesquisar').first.click()
 
     def court_order(self, code, forum):
         self.search(code, forum)
-        self.browser.is_element_present_by_id(
+        has_results = self.browser.is_element_present_by_id(
             'tabelaUltimasMovimentacoes',
             wait_time=60
         )
+
+        if self.recaptcha:
+            self.feedback_recaptcha_solution(has_results)
+
+        if not has_results:
+            self.error_handler(code, forum)
+            return
+
         for link_id in ('linkpartes', 'linkmovimentacoes'):
             if self.browser.is_element_present_by_id(link_id):
                 self.browser.find_by_id(link_id).first.click()
