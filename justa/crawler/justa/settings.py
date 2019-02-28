@@ -3,7 +3,7 @@ from decouple import config
 from justa.validators import (
     CourtOrderModel,
     CourtOrderReferenceModel,
-    CourtOrderTJSPModel
+    CourtOrderESAJModel
 )
 
 
@@ -105,7 +105,7 @@ SPIDERMON_ENABLED = True
 SPIDERMON_VALIDATION_MODELS = {
     CourtOrderModel: 'justa.validators.CourtOrderModel',
     CourtOrderReferenceModel: 'justa.validators.CourtOrderReferenceModel',
-    CourtOrderTJSPModel: 'justa.validators.CourtOrderTJSPModel',
+    CourtOrderESAJModel: 'justa.validators.CourtOrderESAJModel',
 }
 SPIDERMON_SPIDER_CLOSE_MONITORS = ('justa.monitors.JustaMonitorSuite',)
 

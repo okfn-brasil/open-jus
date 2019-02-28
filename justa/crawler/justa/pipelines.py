@@ -7,7 +7,7 @@ class JustaPipeline(object):
     def get_model(item):
         mapping = {
             items.CourtOrder: models.CourtOrder,
-            items.CourtOrderTJSP: models.CourtOrderTJSP
+            items.CourtOrderESAJ: models.CourtOrderESAJ
         }
         return mapping.get(type(item))
 

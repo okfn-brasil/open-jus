@@ -31,10 +31,10 @@ $ docker-compose up django
 
 The `token` value, needed for `POST` requests, should be the hexdigest of the `SECRET_KET`.
 
-##### TJ-SP court orders
+##### eSAJ court orders
 
-* List all court orders:<br>`GET /api/court-orders-tjsp/`
-* Details of a court order:<br>`GET /api/court-orders-tjsp/<id>`
+* List all court orders:<br>`GET /api/court-orders-esaj/`
+* Details of a court order:<br>`GET /api/court-orders-esaj/<id>`
 
 
 ## Testing

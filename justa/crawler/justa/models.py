@@ -16,7 +16,7 @@ class CourtOrder(Model):
         table_name = 'core_courtorder'  # table name as Django default
 
 
-class CourtOrderTJSP(Model):
+class CourtOrderESAJ(Model):
     source = CharField(max_length=16)
     number = CharField(max_length=255)
     decision = TextField()
@@ -34,4 +34,4 @@ class CourtOrderTJSP(Model):
 
     class Meta:
         database = database
-        table_name = 'core_courtordertjsp'  # table name as Django default
+        table_name = 'core_courtorderesaj'  # table name as Django default

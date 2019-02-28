@@ -3,7 +3,7 @@ from datetime import date
 import pytest
 from django.db.utils import IntegrityError
 
-from justa.core.models import CourtOrderTJSP
+from justa.core.models import CourtOrderESAJ
 
 
 DATA = dict(
@@ -22,14 +22,14 @@ DATA = dict(
 
 @pytest.mark.django_db
 def test_complete_court_order():
-    assert CourtOrderTJSP.objects.count() == 0
-    CourtOrderTJSP.objects.create(**DATA)
-    assert CourtOrderTJSP.objects.count() == 1
+    assert CourtOrderESAJ.objects.count() == 0
+    CourtOrderESAJ.objects.create(**DATA)
+    assert CourtOrderESAJ.objects.count() == 1
 
 
 @pytest.mark.django_db
 def test_court_order_without_optional_fields():
-    assert CourtOrderTJSP.objects.count() == 0
+    assert CourtOrderESAJ.objects.count() == 0
     optional = (
         'status',
         'source_numbers',
@@ -41,8 +41,8 @@ def test_court_order_without_optional_fields():
     for index, field in enumerate(optional):
         data = {key: value for key, value in DATA.items() if key is not field}
         data['number'] = data['number'][:-1] + str(index)
-        CourtOrderTJSP.objects.create(**data)
-    assert CourtOrderTJSP.objects.count() == len(optional)
+        CourtOrderESAJ.objects.create(**data)
+    assert CourtOrderESAJ.objects.count() == len(optional)
 
 
 @pytest.mark.django_db
@@ -52,11 +52,11 @@ def test_court_order_without_required_fields():
         if key is not 'decision_date'
     }  # IntegrityError does not happen for text fields
     with pytest.raises(IntegrityError):
-        CourtOrderTJSP.objects.create(**data)
+        CourtOrderESAJ.objects.create(**data)
 
 
 @pytest.mark.django_db
 def test_repeated_court_order():
-    CourtOrderTJSP.objects.create(**DATA)
+    CourtOrderESAJ.objects.create(**DATA)
     with pytest.raises(IntegrityError):
-        CourtOrderTJSP.objects.create(**DATA)
+        CourtOrderESAJ.objects.create(**DATA)

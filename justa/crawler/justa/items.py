@@ -21,8 +21,8 @@ class CourtOrderReference(Item):
     source = Field()
 
 
-class CourtOrderTJSP(Item):
-    """Court orders from TJSP with full text"""
+class CourtOrderESAJ(Item):
+    """Court orders from eSAJ with full text"""
     number = Field()
     status = Field()
     source_numbers = Field()

@@ -20,7 +20,7 @@ class CourtOrder(models.Model):
         ]
 
 
-class CourtOrderTJSP(models.Model):
+class CourtOrderESAJ(models.Model):
     source = models.CharField(max_length=255)
     number = models.CharField(max_length=255)
     decision = models.TextField()

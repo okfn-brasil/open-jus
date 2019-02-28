@@ -15,7 +15,7 @@ class CourtOrderReferenceModel(Model):
     source = StringType(required=True)
 
 
-class CourtOrderTJSPModel(Model):
+class CourtOrderESAJModel(Model):
     number = StringType(required=True)
     decision = StringType(required=True)
     decision_date = DateType(required=True)
