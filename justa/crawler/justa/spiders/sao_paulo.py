@@ -105,7 +105,7 @@ class TJSPFullTextSpider(SeleniumSpider):
     name = 'tjsp_full_text'
     minimum_items_expected = 865
     url = 'https://esaj.tjsp.jus.br/cposg/open.do'
-    default_pdf = '/mnt/data/SUS-SP-TJE-1301até1812_viaLAI.pdf'
+    default_pdf = '/mnt/data/SUS-SP-TJE-1301ate1812_viaLAI.pdf'
     pattern = r'(\d{7}-\d{2}\.\d{4}).\d\.\d{2}\.(\d{4})'
     start_urls = ('http://justa.org/',)  # fake (real ones happens in Selenium)
 
