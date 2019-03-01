@@ -14,7 +14,7 @@ peewee = "*"
 psycopg2-binary = "*"
 python-decouple = "*"
 requests = "*"
-rows = "*"
+rows = {extras = "xls", version = "*"}
 schematics = "*"
 scrapy = "*"
 selenium = "*"
