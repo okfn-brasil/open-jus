@@ -5,6 +5,8 @@ import requests
 import rows
 import splinter
 
+from justa.spiders import SeleniumSpider
+
 
 Action = namedtuple("Action", ["year", "state", "name", "code"])
 
@@ -14,45 +16,44 @@ def get_actions_for_state(state):
     response = requests.get(url)
     table = rows.import_from_csv(io.BytesIO(response.content), encoding="utf-8")
     return [
-        Action(year=row.ano, state=row.estado, name=row.acao, code=row.cod_acao)
+        Action(year=row.ano, state=row.estado, name=row.nome_acao, code=row.codigo_acao)
         for row in table
-        if row.estado == state and all(row._asdict().values())
+        if row.estado == state and all((row.ano, row.estado, row.codigo_acao, row.nome_acao))
     ]
 
 
-class BaseBudgetExecutionSpider:
-    url = None  # Base URL used on `start` method
+class BaseBudgetExecutionSpider(SeleniumSpider):
+    start_urls = ("http://justa.org.br/",)  # fake (real ones happens in Selenium)
+    state = None  # TODO: set state code
+    url = None  # Base URL used on `start_page` method
     value_to_wait_for = ""  # Value of an element to wait during operations
     value_wait_timeout = 30  # Seconds to wait for this value to be shown in the page
 
-    def __init__(self, headless=True):
-        self.browser_args = []
-        self.browser_kwargs = {"headless": headless}
-        self.headless = headless
-        self._browser = None
-
-    def get_browser_options(self):
-        return None
-
     @property
-    def browser(self):
-        if self._browser is None:
-            self._browser = splinter.Browser(
-                "chrome",
-                options=self.get_browser_options(),
-                *self.browser_args,
-                **self.browser_kwargs,
+    def actions(self):
+        return get_actions_for_state(self.state)
+
+    def parse(self, _):
+        self.start_page()
+        for action in self.actions:
+            yield from self.execute(action.year, action.code)
+
+    def should_wait(self):
+        return (
+            bool(self.value_to_wait_for)
+            and
+            self.browser.is_element_present_by_value(
+                    self.value_to_wait_for, wait_time=0
             )
-        return self._browser
+        )
 
     def wait(self):
         if self.value_to_wait_for:
             self.browser.is_element_present_by_value(
-                self.value_to_wait_for,
-                wait_time=self.value_wait_timeout,
+                self.value_to_wait_for, wait_time=self.value_wait_timeout
             )
 
-    def start(self):
+    def start_page(self):
         self.browser.visit(self.url)
         self.wait()
 

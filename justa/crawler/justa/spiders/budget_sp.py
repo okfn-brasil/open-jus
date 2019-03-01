@@ -1,12 +1,13 @@
 import io
-import time
 
 import rows
 
-from budget_base import get_actions_for_state, BaseBudgetExecutionSpider, BRDecimalField
+from justa.spiders.budget_base import BaseBudgetExecutionSpider, BRDecimalField
 
 
 class SaoPauloBudgetExecutionSpider(BaseBudgetExecutionSpider):
+    name = "budget_sp"
+    state = "SP"
     url = "https://www.fazenda.sp.gov.br/SigeoLei131/Paginas/FlexConsDespesa.aspx"
     value_to_wait_for = "Pesquisar"
 
@@ -38,7 +39,7 @@ class SaoPauloBudgetExecutionSpider(BaseBudgetExecutionSpider):
         select_action = self.browser.find_by_xpath(
             "//select[contains(@name, 'Acao')]"
         ).first
-        action_text = actions[0].text
+        action_text = actions.first.text
         select_action.select_by_text(action_text)
         self.wait()
 
@@ -46,7 +47,7 @@ class SaoPauloBudgetExecutionSpider(BaseBudgetExecutionSpider):
         self.browser.find_by_value("Pesquisar").first.click()
         self.wait()
 
-    def parse_budget(self):
+    def parse_budget(self, year, action):
         table = rows.import_from_html(
             io.BytesIO(self.browser.html.encode("utf-8")),
             index=10,
@@ -59,14 +60,24 @@ class SaoPauloBudgetExecutionSpider(BaseBudgetExecutionSpider):
                 "pago_restos": BRDecimalField,
             },
         )
+        result = []
+        for row in table:
+            if row.elemento == "TOTAL":
+                continue
+            row = row._asdict()
+            row.update({
+                "ano": year,
+                "codigo_acao": action,
+                "estado": "SP",
+            })
+            result.append(row)
 
-        result = [row._asdict() for row in table if row.elemento != "TOTAL"]
         return rows.import_from_dicts(result)
 
     def execute(self, year, action):
-        self.start()
         self.select_year(year)
         self.check_all_phases()
         self.select_action(action)
         self.do_search()
-        return self.parse_budget()
+        for row in self.parse_budget(year, action):
+            yield row._asdict()

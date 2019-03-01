@@ -5,9 +5,10 @@ import rows
 
 from budget_base import get_actions_for_state, Action
 from budget_sp import SaoPauloBudgetExecutionSpider
+from budget_ce import CearaBudgetExecutionSpider
 
 
-spiders = {"SP": SaoPauloBudgetExecutionSpider}
+spiders = {"CE": CearaBudgetExecutionSpider, "SP": SaoPauloBudgetExecutionSpider}
 
 
 def main():

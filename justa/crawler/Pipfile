@@ -9,15 +9,21 @@ pytest = "*"
 
 [packages]
 jsonschema = "*"
+lxml = "*"
 peewee = "*"
 psycopg2-binary = "*"
 python-decouple = "*"
-rows = {extras = ["pdf"],version = "*"}
+requests = "*"
+rows = {extras = "xls", version = "*"}
 schematics = "*"
 scrapy = "*"
 selenium = "*"
+six = "*"
 spidermon = {extras = ["monitoring", "validation"],version = "*"}
 splinter = "*"
+tqdm = "*"
+xlrd = "*"
+xlwt = "*"
 
 [requires]
 python_version = "3.7"
