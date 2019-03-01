@@ -1,6 +1,10 @@
 from decouple import config
 
-from justa.validators import CourtOrderModel, CourtOrderReferenceModel
+from justa.validators import (
+    CourtOrderModel,
+    CourtOrderReferenceModel,
+    CourtOrderTJSPModel
+)
 
 
 # Scrapy settings for justa project
@@ -101,6 +105,7 @@ SPIDERMON_ENABLED = True
 SPIDERMON_VALIDATION_MODELS = {
     CourtOrderModel: 'justa.validators.CourtOrderModel',
     CourtOrderReferenceModel: 'justa.validators.CourtOrderReferenceModel',
+    CourtOrderTJSPModel: 'justa.validators.CourtOrderTJSPModel',
 }
 SPIDERMON_SPIDER_CLOSE_MONITORS = ('justa.monitors.JustaMonitorSuite',)
 
