@@ -3,8 +3,8 @@ from spidermon import Monitor, MonitorSuite, monitors
 
 class MinimumItemsMonitor(Monitor):
     minimum_expected = {
-        'DF': 433,
-        'SP': 826
+        'distrito_federal': 433,
+        'tjsp_numbers': 826
     }
 
     @monitors.name('Minimum number of items')
@@ -13,7 +13,7 @@ class MinimumItemsMonitor(Monitor):
         if not hasattr(spider, "abbr"):
             return
         items_extracted = self.data.stats.get('item_scraped_count', 0)
-        minimum_expected = self.minimum_expected.get(spider.abbr, 0)
+        minimum_expected = self.minimum_expected.get(spider.name, 0)
         self.assertGreaterEqual(items_extracted, minimum_expected)
 
 

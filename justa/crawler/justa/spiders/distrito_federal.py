@@ -12,7 +12,7 @@ from justa.spiders import SeleniumSpider
 
 class DistritoFederalSpider(SeleniumSpider):
     name = 'distrito_federal'
-    abbr = 'DF'
+    minimum_items_expected = 433
     params = urlencode({
         'visaoId': 'tjdf.sistj.acordaoeletronico.buscaindexada.apresentacao.VisaoBuscaAcordao',
         'nomeDaPagina': 'buscaLivre2',

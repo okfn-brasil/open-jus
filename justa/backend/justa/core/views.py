@@ -3,16 +3,29 @@ from restless.dj import DjangoResource
 from restless.exceptions import BadRequest
 from restless.preparers import FieldsPreparer
 
-from justa.core.models import CourtOrder
+from justa.core.models import CourtOrder, CourtOrderTJSP
 from justa.core.forms import AuthenticationForm, CourtOrderForm
 
 
-class CourtOrderResource(DjangoResource):
+class JustaResource(DjangoResource):
     page_size = 25
-    preparer = FieldsPreparer(fields={
-        f.name: f.name
-        for f in CourtOrder._meta.fields
-    })
+    model = None
+
+    @property
+    def preparer(self):
+        if not hasattr(self, '_preparer_cache'):
+            self._preparer_cache = FieldsPreparer(fields={
+                f.name: f.name
+                for f in self.model._meta.fields
+            })
+        return self._preparer_cache
+
+    def is_authenticated(self):
+        if self.endpoint in {'list', 'detail'}:
+            return True
+
+        form = AuthenticationForm(self.request.POST)
+        return form.is_valid()
 
     def serialize_list(self, data):
         if data is None:
@@ -51,18 +64,15 @@ class CourtOrderResource(DjangoResource):
         }
         return response_dict
 
-    def is_authenticated(self):
-        if self.endpoint in {'list', 'detail'}:
-            return True
-
-        form = AuthenticationForm(self.request.POST)
-        return form.is_valid()
-
     def list(self):
-        return CourtOrder.objects.all()
+        return self.model.objects.all()
 
     def detail(self, pk):
-        return CourtOrder.objects.get(id=pk)
+        return self.model.objects.get(id=pk)
+
+
+class CourtOrderResource(JustaResource):
+    model = CourtOrder
 
     def create(self):
         form = CourtOrderForm(self.data)
@@ -70,3 +80,7 @@ class CourtOrderResource(DjangoResource):
             raise BadRequest(form.errors)
 
         return form.save()
+
+
+class CourtOrderTJSPResource(JustaResource):
+    model = CourtOrderTJSP

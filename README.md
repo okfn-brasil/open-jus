@@ -55,12 +55,20 @@ Then access it at http://localhost:8000/
 
 #### API endpoints
 
-* List all court orders: `GET /api/court-orders/`
-* Details of a court order: `GET /api/court-orders/<id>`
-* Create a court order `POST /api/court-orders/`
+##### General court orders
+
+* List all court orders:<br>`GET /api/court-orders/`
+* Details of a court order:<br>`GET /api/court-orders/<id>`
+* Create a court order:<br>`POST /api/court-orders/`
 
 The `token` value, needed for `POST` requests, should be the hexdigest of the
 `SECRET_KET`.
+
+##### TJ-SP court orders
+
+* List all court orders:<br>`GET /api/court-orders-tjsp/`
+* Details of a court order:<br>`GET /api/court-orders-tjsp/<id>`
+
 
 ## Testing
 

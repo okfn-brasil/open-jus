@@ -14,3 +14,24 @@ class CourtOrder(Model):
     class Meta:
         database = database
         table_name = 'core_courtorder'  # table name as Django default
+
+
+class CourtOrderTJSP(Model):
+    source = CharField(max_length=16)
+    number = CharField(max_length=255)
+    decision = TextField()
+    decision_date = DateField()
+    status = TextField(default='')
+    source_numbers = TextField(default='')
+    reporter = TextField(default='')
+    category = TextField(default='')
+    subject = TextField(default='')
+    petitioner = TextField(default='')
+    petitioner_attorneys = TextField(default='')
+    requested = TextField(default='')
+    requested_attorneys = TextField(default='')
+    appeals = TextField(default='')
+
+    class Meta:
+        database = database
+        table_name = 'core_courtordertjsp'  # table name as Django default
