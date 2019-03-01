@@ -12,9 +12,8 @@ class JustaPipeline(object):
         return mapping.get(type(item))
 
     def process_item(self, item, spider):
-        model = self.get_model(item)
-        if not model:
-            return item  # no need to save
+        if isinstance(item, dict):
+            return item
 
         defaults = dict(item)
         defaults['source'] = spider.name

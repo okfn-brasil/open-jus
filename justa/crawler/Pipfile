@@ -9,15 +9,21 @@ pytest = "*"
 
 [packages]
 jsonschema = "==2.6.0"  # until spidermon supports jsonschema>=3.0.0
+lxml = "*"
 peewee = "*"
 psycopg2-binary = "*"
 python-decouple = "*"
+requests = "*"
 rows = {extras = ["pdf,xls"],version = "*"}
 schematics = "*"
 scrapy = "*"
 selenium = "*"
+six = "*"
 spidermon = {extras = ["monitoring", "validation"],version = "*"}
 splinter = "*"
+tqdm = "*"
+xlrd = "*"
+xlwt = "*"
 
 [requires]
 python_version = "3.7"
