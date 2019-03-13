@@ -3,7 +3,7 @@ from decouple import config
 from justa.validators import (
     CourtOrderModel,
     CourtOrderReferenceModel,
-    CourtOrderTJSPModel
+    CourtOrderESAJModel
 )
 
 
@@ -105,7 +105,7 @@ SPIDERMON_ENABLED = True
 SPIDERMON_VALIDATION_MODELS = {
     CourtOrderModel: 'justa.validators.CourtOrderModel',
     CourtOrderReferenceModel: 'justa.validators.CourtOrderReferenceModel',
-    CourtOrderTJSPModel: 'justa.validators.CourtOrderTJSPModel',
+    CourtOrderESAJModel: 'justa.validators.CourtOrderESAJModel',
 }
 SPIDERMON_SPIDER_CLOSE_MONITORS = ('justa.monitors.JustaMonitorSuite',)
 
@@ -115,3 +115,9 @@ SPIDERMON_SPIDER_CLOSE_MONITORS = ('justa.monitors.JustaMonitorSuite',)
 
 CHROME_DRIVE_URL = config('CHROME_DRIVE_URL')
 FIREFOX_DRIVE_URL = config('FIREFOX_DRIVE_URL')
+
+
+# 2captcha
+# https://2captcha.com/
+
+TWO_CAPTCHA_API_KEY = config('TWO_CAPTCHA_API_KEY', default=None)

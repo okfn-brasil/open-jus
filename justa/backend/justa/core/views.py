@@ -3,7 +3,7 @@ from restless.dj import DjangoResource
 from restless.exceptions import BadRequest
 from restless.preparers import FieldsPreparer
 
-from justa.core.models import CourtOrder, CourtOrderTJSP
+from justa.core.models import CourtOrder, CourtOrderESAJ
 from justa.core.forms import AuthenticationForm, CourtOrderForm
 
 
@@ -82,5 +82,5 @@ class CourtOrderResource(JustaResource):
         return form.save()
 
 
-class CourtOrderTJSPResource(JustaResource):
-    model = CourtOrderTJSP
+class CourtOrderESAJResource(JustaResource):
+    model = CourtOrderESAJ

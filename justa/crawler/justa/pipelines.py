@@ -7,7 +7,7 @@ class JustaPipeline(object):
     def get_model(item):
         mapping = {
             items.CourtOrder: models.CourtOrder,
-            items.CourtOrderTJSP: models.CourtOrderTJSP
+            items.CourtOrderESAJ: models.CourtOrderESAJ
         }
         return mapping.get(type(item))
 
@@ -19,6 +19,7 @@ class JustaPipeline(object):
         defaults['source'] = spider.name
         data = {k: v for k, v in defaults.items()}
 
+        model = self.get_model(item)
         _, created = model.get_or_create(**data, defaults=defaults)
         msg = f'Court order {data["number"]} from {data["source"]}'
         status = 'created' if created else 'already exists'

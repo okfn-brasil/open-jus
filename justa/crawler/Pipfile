@@ -8,13 +8,13 @@ ipdb = "*"
 pytest = "*"
 
 [packages]
-jsonschema = "*"
+jsonschema = "==2.6.0"  # until spidermon supports jsonschema>=3.0.0
 lxml = "*"
 peewee = "*"
 psycopg2-binary = "*"
 python-decouple = "*"
 requests = "*"
-rows = {extras = "xls", version = "*"}
+rows = {extras = ["pdf,xls"],version = "*"}
 schematics = "*"
 scrapy = "*"
 selenium = "*"
