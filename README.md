@@ -1,4 +1,4 @@
-# Justa
+# Open-Jus
 
 ## Requirements
 
