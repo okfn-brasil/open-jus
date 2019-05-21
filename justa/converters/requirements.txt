@@ -1,1 +1,7 @@
-rows[pdf] >= 0.4.1
+cached-property
+openpyxl
+requests
+https://github.com/turicas/rows/archive/develop.zip
+lxml
+pymupdf
+file-magic
