@@ -1,4 +1,10 @@
-# Open-Jus
+# JUSTA
+
+## About
+
+JUSTA is a research project that aims to understand how the Justice System’s management is happening in Brazil and facilitate its understanding through data visualization. What impacts can the proximity between the three Powers - Executive, Legislative and Judiciary - have in social life and democratic organization, especially when it comes to public safety and criminal justice?
+
+JUSTA is headquartered in the IBCCRIM (Brazilian Institute of Criminal Sciences) and is held in partnership with the Open Knowledge Brasil.
 
 ## Requirements
 
