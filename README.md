@@ -6,6 +6,8 @@ JUSTA is a research project that aims to understand how the Justice System’s m
 
 JUSTA is headquartered in the IBCCRIM (Brazilian Institute of Criminal Sciences) and is held in partnership with the Open Knowledge Brasil.
 
+http://justa.org.br/
+
 ## Requirements
 
 * Docker and Docker Compose
