@@ -5,3 +5,4 @@ https://github.com/turicas/rows/archive/develop.zip
 lxml
 pymupdf
 file-magic
+tqdm
